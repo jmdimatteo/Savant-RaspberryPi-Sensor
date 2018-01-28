@@ -1,5 +1,5 @@
 # Savant-RaspberryPi-Sensor
-Savant Profile to detect Raspberry Pi GPIO input pin state changes.
+Savant Profile to detect Raspberry Pi GPIO INPUT pin state changes. This can be used to detect when a button is pressed or when a motion detector senses motion.
 ## Synopsis
 The included Savant profile can be used to detect when Raspberry Pi pin states change without polling. The profile requires Pi4J to be installed on the Raspberry Pi, which uses wiringPi and Java to listen for pin state changes and print them to console. It only prints to the console that initiates the program so the java program starts from within an included bash script that runs on the Pi. After the profile connects, it runs the script from the home directory and begins listening on the console port. The username and password of the Raspberry Pi can be set with user variables on the device in Blueprint. The profile uses telnet to communicate so a telnet server will also need to be installed. 
 ## Installation
