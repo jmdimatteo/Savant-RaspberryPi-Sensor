@@ -9,6 +9,7 @@ curl -s get.pi4j.com | sudo bash
 ```
 If you get a message like "Unable to determine hardware version. I see: Hardware: BCM2835" you will most likely need to install the SNAPSHOT version referenced here.
 http://pi4j.com/download.html
+
 STEP 2: Navigate to Examples folder
 ```
 cd /opt/pi4j/examples
