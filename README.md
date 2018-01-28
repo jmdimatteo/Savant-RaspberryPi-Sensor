@@ -23,12 +23,14 @@ STEP 4: Verify Program runs
 sudo java -classpath .:classes:/opt/pi4j/lib/'*' ListenMultipleGpioExample
 ```
 STEP 5: Test Program
+
 Connect Buttons or contact sensors to GPIO 0-7 and activate to view changes print to console, you should see something like below.
 ```
 --> GPIO PIN STATE CHANGE: "GPIO 2" <GPIO 2> = HIGH
 --> GPIO PIN STATE CHANGE: "GPIO 2" <GPIO 2> = LOW
 ```
 CTRL-C to close the program and exit back to the command prompt.
+
 STEP 6: Upload sensors.sh to Raspberry Pi home directory (Use Filezilla or your another FTP/SFTP client to transfer the file.)
 You can also just make a file called sensors.sh in the home directory of the pi and add the following (make sure the file is executable):
 ```
@@ -42,6 +44,7 @@ Test script to make sure it runs from command prompt
 bash sensors.sh
 ```
 CTRL-C to close the program and exit back to the command prompt.
+
 STEP 7 : Install telnet server
 ```
 sudo apt-get install telnetd
