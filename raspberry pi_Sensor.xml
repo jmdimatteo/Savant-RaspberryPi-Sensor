@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="racepoint_component_profile.xsd" manufacturer="Raspberry Pi" model="wiringPi Sensor" device_class="Trigger_environment_device" minimum_component_engine_version="0.0" rpm_xml_version="2.1">
+    <notes>
+        This profile requires the Raspberry Pi to have Pi4J installed with a telnet server.
+        Complile ListenMultipleGpioExample.java from the Pi4J example library then place the accompanying bash script, sensors.sh in the home directory to allow Savant to start the Java Program. Savant will start the program automatically and there is also a custom command to stop and start.
+        The username and password of the Pi are set with user variables.
+        
+		====================== Change Log ==================
+        Version: 2.1 Change: Initial Build
+		Version: 1.4 Change: Version Number bump to support new Savant Revisioning Scheme.  Risk: Low Importance: Forced
+    </notes>
+    <control_interfaces preferred="ip">
+		<ip port="23" response_time_length_ms="3000" protocol="telnet">  
+			<send_postfix type="hex">0D</send_postfix>
+            <receive_end_condition test_condition="data" type="character"></receive_end_condition>
+		</ip>
+	</control_interfaces>
+    <media_interfaces>
+        <data name_on_component="NETWORK">
+            <combined_media>
+                <data_media type="ethernet"></data_media>
+                <control port="23"></control>
+            </combined_media>
+        </data>
+        <internal name_on_component="Trigger environment device">
+            <environmental_media/>
+            <resource resource_type="ENV_GENERALTRIGGERCONTROLLEDDEVICE_SOURCE"/>
+        </internal>
+    </media_interfaces>
+    <state_variable_list>
+        <state_variable name="piUsername" user_editable="yes">pi</state_variable>
+        <state_variable name="piPassword" user_editable="yes">wiringPi</state_variable>
+    </state_variable_list>
+    <logical_component logical_component_name="Trigger_environment_device">
+        <implementation>
+            <internal name_on_component="Trigger environment device"/>
+        </implementation>
+        <status_messages>
+            <status_message name="Login">
+                <constant type="character">login:</constant>
+                <run_elements>  
+                    <actions>
+                        <action name="Login">
+                            <command_interface interface="ip">
+                                <command response_required="no">
+                                    <parameter_list>
+                                        <parameter parameter_data_type="character" state_variable="piUsername"></parameter>
+                                    </parameter_list>
+                                    <delay ms_delay="1000"/>
+                                </command>
+                                <command response_required="no">
+                                    <parameter_list>
+                                        <parameter parameter_data_type="character" state_variable="piPassword"></parameter>
+                                    </parameter_list>
+                                    <delay ms_delay="1000"/>
+                                </command>
+                            </command_interface>
+                        </action>
+                    </actions>
+                </run_elements>
+            </status_message>
+            <status_message name="Start">
+                <constant type="character">&#58;&#126;&#36;</constant>
+                <run_elements>  
+                    <actions>
+                        <action name="GetPiInfo">
+                            <command_interface interface="ip">
+                                <command response_required="no">
+                                    <command_string type="character">gpio -v</command_string>
+                                    <delay ms_delay="1000"/>
+                                </command>
+                            </command_interface>
+                        </action>                      
+                        <action name="StartListener">
+                            <command_interface interface="ip">
+                                <command response_required="no">
+                                    <command_string type="character">bash sensors.sh</command_string>
+                                    <delay ms_delay="1000"/>
+                                </command>
+                            </command_interface>
+                        </action>
+                    </actions>
+                </run_elements>
+            </status_message>
+            <status_message name="GPIOVersion">
+                <constant type="character">gpio version: </constant>
+                <data type="character" terminator_type="end_of_data">
+                    <update state="GPIOVersion" type="string"/>
+                </data>
+            </status_message>
+            <status_message name="PiType">
+                <constant type="character">Type: </constant>
+                <data type="character" terminator_type="character" terminator=",">
+                    <update state="PiType" type="string"/>
+                </data>
+            </status_message>
+            <status_message name="PiRevision">
+                <constant type="character">Revision: </constant>
+                <data type="character" terminator_type="character" terminator=",">
+                    <update state="PiRevision" type="string"/>
+                </data>
+            </status_message>
+            <status_message name="PiMemory">
+                <constant type="character">Memory: </constant>
+                <data type="character" terminator_type="character" terminator=",">
+                    <update state="PiMemory" type="string"/>
+                </data>
+            </status_message>
+            <status_message name="PiMaker">
+                <constant type="character">Maker: </constant>
+                <data type="character" terminator_type="character" terminator=" ">
+                    <update state="PiMaker" type="string"/>
+                </data>
+            </status_message>
+            <status_message name="GPIO 0 Status">
+				<constant type="character">&lt;GPIO 0&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO0PressedState" type="string">Pressed</update>
+							<update state="GPIO0IsPressed" type="boolean">true</update>
+                            <update state="GPIO0IsReleased" type="boolean">false</update>
+							<update state="GPIO0State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO0PressedState" type="string">Released</update>
+							<update state="GPIO0IsPressed" type="boolean">false</update>
+                            <update state="GPIO0IsReleased" type="boolean">true</update>
+							<update state="GPIO0State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 1 Status">
+				<constant type="character">&lt;GPIO 1&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO1PressedState" type="string">Pressed</update>
+							<update state="GPIO1IsPressed" type="boolean">true</update>
+                            <update state="GPIO1IsReleased" type="boolean">false</update>
+							<update state="GPIO1State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO1PressedState" type="string">Released</update>
+							<update state="GPIO1IsPressed" type="boolean">false</update>
+                            <update state="GPIO1IsReleased" type="boolean">true</update>
+							<update state="GPIO1State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 2 Status">
+				<constant type="character">&lt;GPIO 2&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO2PressedState" type="string">Pressed</update>
+							<update state="GPIO2IsPressed" type="boolean">true</update>
+                            <update state="GPIO2IsReleased" type="boolean">false</update>
+							<update state="GPIO2State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO2PressedState" type="string">Released</update>
+							<update state="GPIO2IsPressed" type="boolean">false</update>
+                            <update state="GPIO2IsReleased" type="boolean">true</update>
+							<update state="GPIO2State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 3 Status">
+				<constant type="character">&lt;GPIO 3&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO3PressedState" type="string">Pressed</update>
+							<update state="GPIO3IsPressed" type="boolean">true</update>
+                            <update state="GPIO3IsReleased" type="boolean">false</update>
+							<update state="GPIO3State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO3PressedState" type="string">Released</update>
+							<update state="GPIO3IsPressed" type="boolean">false</update>
+                            <update state="GPIO3IsReleased" type="boolean">true</update>
+							<update state="GPIO3State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 4 Status">
+				<constant type="character">&lt;GPIO 4&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO4PressedState" type="string">Pressed</update>
+							<update state="GPIO4IsPressed" type="boolean">true</update>
+                            <update state="GPIO4IsReleased" type="boolean">false</update>
+							<update state="GPIO4State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO4PressedState" type="string">Released</update>
+							<update state="GPIO4IsPressed" type="boolean">false</update>
+                            <update state="GPIO4IsReleased" type="boolean">true</update>
+							<update state="GPIO4State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 5 Status">
+				<constant type="character">&lt;GPIO 5&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO5PressedState" type="string">Pressed</update>
+							<update state="GPIO5IsPressed" type="boolean">true</update>
+                            <update state="GPIO5IsReleased" type="boolean">false</update>
+							<update state="GPIO5State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO5PressedState" type="string">Released</update>
+							<update state="GPIO5IsPressed" type="boolean">false</update>
+                            <update state="GPIO5IsReleased" type="boolean">true</update>
+							<update state="GPIO5State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 6 Status">
+				<constant type="character">&lt;GPIO6&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO6PressedState" type="string">Pressed</update>
+							<update state="GPIO6IsPressed" type="boolean">true</update>
+                            <update state="GPIO6IsReleased" type="boolean">false</update>
+							<update state="GPIO6State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO6PressedState" type="string">Released</update>
+							<update state="GPIO6IsPressed" type="boolean">false</update>
+                            <update state="GPIO6IsReleased" type="boolean">true</update>
+							<update state="GPIO6State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+            <status_message name="GPIO 7 Status">
+				<constant type="character">&lt;GPIO70&gt; = </constant>
+				<data type="character" terminator_type="end_of_data">
+					<data_map match_required="yes">
+						<map key="HIGH">
+							<update state="GPIO7PressedState" type="string">Pressed</update>
+							<update state="GPIO7IsPressed" type="boolean">true</update>
+                            <update state="GPIO7IsReleased" type="boolean">false</update>
+							<update state="GPIO7State" type="string">HIGH</update>
+						</map>
+						<map key="LOW">
+							<update state="GPIO7PressedState" type="string">Released</update>
+							<update state="GPIO7IsPressed" type="boolean">false</update>
+                            <update state="GPIO7IsReleased" type="boolean">true</update>
+							<update state="GPIO7State" type="string">LOW</update>
+						</map>
+					</data_map>
+				</data>
+			</status_message>
+        </status_messages> 
+        <custom_component_actions>
+            <action name="StartListener">
+                <command_interface interface="ip">
+                    <command response_required="no">
+                        <command_string type="character">bash sensors.sh</command_string>
+                        <delay ms_delay="1000"/>
+                    </command>
+                </command_interface>
+            </action>
+            <action name="StopListener">
+                <command_interface interface="ip">
+                    <command response_required="no">
+                        <command_string type="hex">03</command_string>
+                        <delay ms_delay="1000"/>
+                    </command>
+                </command_interface>
+            </action>
+        </custom_component_actions>
+    </logical_component>
+</component>
