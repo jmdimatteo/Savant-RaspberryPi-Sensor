@@ -39,7 +39,7 @@ You can also just make a file called sensors.sh in the home directory of the pi 
 cd /opt/pi4j/examples
 sudo java -classpath .:classes:/opt/pi4j/lib/'*' ListenMultipleGpioExample
 ```
-Test script to make sure it runs from command prompt
+Test script to make sure the java program runs from the command prompt
 ```
 bash sensors.sh
 ```
